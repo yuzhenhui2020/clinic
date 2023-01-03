@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoniucr.mapper.HistoryMapper">
+    <resultMap id="BaseResultMap" type="com.xiaoniucr.entity.History">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="doctor_id" jdbcType="INTEGER" property="doctorId"/>
+        <result column="visit_date" jdbcType="DATE" property="visitDate"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , user_id, doctor_id, visit_date, content, create_time, update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_history
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_history
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.xiaoniucr.entity.History">
+        insert into t_history (id, user_id, doctor_id,
+                               visit_date, content, create_time,
+                               update_time)
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{doctorId,jdbcType=INTEGER},
+                #{visitDate,jdbcType=DATE}, #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xiaoniucr.entity.History">
+        insert into t_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="doctorId != null">
+                doctor_id,
+            </if>
+            <if test="visitDate != null">
+                visit_date,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="doctorId != null">
+                #{doctorId,jdbcType=INTEGER},
+            </if>
+            <if test="visitDate != null">
+                #{visitDate,jdbcType=DATE},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.xiaoniucr.entity.History">
+        update t_history
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="doctorId != null">
+                doctor_id = #{doctorId,jdbcType=INTEGER},
+            </if>
+            <if test="visitDate != null">
+                visit_date = #{visitDate,jdbcType=DATE},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.xiaoniucr.entity.History">
+        update t_history
+        set user_id     = #{userId,jdbcType=INTEGER},
+            doctor_id   = #{doctorId,jdbcType=INTEGER},
+            visit_date  = #{visitDate,jdbcType=DATE},
+            content     = #{content,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="findList" resultType="com.xiaoniucr.entity.History">
+        select a.*,
+        b.nickname as patientNickname,
+        c.nickname as doctorNickname,
+        d.dept_name
+        from t_history a
+        inner join t_user b on a.user_id = b.id
+        inner join t_doctor c on a.doctor_id = c.id
+        inner join t_dept d on c.dept_id = d.id
+        <where>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="doctorId != null and doctorId != ''">
+                and a.doctor_id = #{doctorId}
+            </if>
+            <if test="patientNickname != null and patientNickname != ''">
+                and b.nickname like concat('%',#{patientNickname},'%')
+            </if>
+            <if test="doctorNickname != null and doctorNickname != ''">
+                and c.nickname like concat('%',#{doctorNickname},'%')
+            </if>
+        </where>
+        order by a.create_time desc
+        limit #{start},#{limit};
+    </select>
+
+    <select id="findTotal" resultType="java.lang.Integer">
+        select count(a.id)
+        from t_history a
+        inner join t_user b on a.user_id = b.id
+        inner join t_doctor c on a.doctor_id = c.id
+        inner join t_dept d on c.dept_id = d.id
+        <where>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="doctorId != null and doctorId != ''">
+                and a.doctor_id = #{doctorId}
+            </if>
+            <if test="patientNickname != null and patientNickname != ''">
+                and b.nickname like concat('%',#{patientNickname},'%')
+            </if>
+            <if test="doctorNickname != null and doctorNickname != ''">
+                and c.nickname like concat('%',#{doctorNickname},'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

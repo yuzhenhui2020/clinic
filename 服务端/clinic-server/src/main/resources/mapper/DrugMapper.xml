@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoniucr.mapper.DrugMapper">
+    <resultMap id="BaseResultMap" type="com.xiaoniucr.entity.Drug">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="drug_no" jdbcType="VARCHAR" property="drugNo"/>
+        <result column="drug_name" jdbcType="VARCHAR" property="drugName"/>
+        <result column="stock" jdbcType="INTEGER" property="stock"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="useway" jdbcType="INTEGER" property="useway"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , drug_no, drug_name, stock, price, unit, useway, remark, create_time, update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_drug
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_drug
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.xiaoniucr.entity.Drug">
+        insert into t_drug (id, drug_no, drug_name,
+                            stock, price, unit,
+                            useway, remark, create_time,
+                            update_time)
+        values (#{id,jdbcType=INTEGER}, #{drugNo,jdbcType=VARCHAR}, #{drugName,jdbcType=VARCHAR},
+                #{stock,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{unit,jdbcType=VARCHAR},
+                #{useway,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xiaoniucr.entity.Drug">
+        insert into t_drug
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="drugNo != null">
+                drug_no,
+            </if>
+            <if test="drugName != null">
+                drug_name,
+            </if>
+            <if test="stock != null">
+                stock,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="useway != null">
+                useway,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="drugNo != null">
+                #{drugNo,jdbcType=VARCHAR},
+            </if>
+            <if test="drugName != null">
+                #{drugName,jdbcType=VARCHAR},
+            </if>
+            <if test="stock != null">
+                #{stock,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="useway != null">
+                #{useway,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.xiaoniucr.entity.Drug">
+        update t_drug
+        <set>
+            <if test="drugNo != null">
+                drug_no = #{drugNo,jdbcType=VARCHAR},
+            </if>
+            <if test="drugName != null">
+                drug_name = #{drugName,jdbcType=VARCHAR},
+            </if>
+            <if test="stock != null">
+                stock = #{stock,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="useway != null">
+                useway = #{useway,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.xiaoniucr.entity.Drug">
+        update t_drug
+        set drug_no     = #{drugNo,jdbcType=VARCHAR},
+            drug_name   = #{drugName,jdbcType=VARCHAR},
+            stock       = #{stock,jdbcType=INTEGER},
+            price       = #{price,jdbcType=DOUBLE},
+            unit        = #{unit,jdbcType=VARCHAR},
+            useway       = #{useway,jdbcType=INTEGER},
+            remark      = #{remark,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="findList" resultType="com.xiaoniucr.entity.Drug">
+        select * from t_drug
+        <where>
+            <if test="drugNo != null and drugNo != ''">
+                and drug_no like concat('%',#{drugNo},'%')
+            </if>
+            <if test="drugName != null and drugName != ''">
+                and drug_name like concat('%',#{drugName},'%')
+            </if>
+        </where>
+        order by create_time desc
+        limit #{start},#{limit};
+    </select>
+
+    <select id="findTotal" resultType="java.lang.Integer">
+        select count(id) from t_drug
+        <where>
+            <if test="drugNo != null and drugNo != ''">
+                and drug_no like concat('%',#{drugNo},'%')
+            </if>
+            <if test="drugName != null and drugName != ''">
+                and drug_name like concat('%',#{drugName},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectByDrugNo" resultType="com.xiaoniucr.entity.Drug">
+        select * from t_drug where drug_no = #{drugNo};
+    </select>
+
+
+    <select id="findAll" resultType="com.xiaoniucr.entity.Drug">
+        select * from t_drug order by id asc;
+    </select>
+</mapper>

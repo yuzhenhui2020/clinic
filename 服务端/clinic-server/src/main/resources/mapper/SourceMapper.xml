@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoniucr.mapper.SourceMapper">
+    <resultMap id="BaseResultMap" type="com.xiaoniucr.entity.Source">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="plan_id" jdbcType="INTEGER" property="planId"/>
+        <result column="begin_time" jdbcType="VARCHAR" property="beginTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="total" jdbcType="INTEGER" property="total"/>
+        <result column="rest" jdbcType="INTEGER" property="rest"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , plan_id, begin_time, end_time, total, rest, create_time, update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_source
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_source
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.xiaoniucr.entity.Source">
+        insert into t_source (id, plan_id, begin_time,
+                              end_time, total, rest,
+                              create_time, update_time)
+        values (#{id,jdbcType=INTEGER}, #{planId,jdbcType=INTEGER}, #{beginTime,jdbcType=VARCHAR},
+                #{endTime,jdbcType=VARCHAR}, #{total,jdbcType=INTEGER}, #{rest,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xiaoniucr.entity.Source">
+        insert into t_source
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="planId != null">
+                plan_id,
+            </if>
+            <if test="beginTime != null">
+                begin_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="total != null">
+                total,
+            </if>
+            <if test="rest != null">
+                rest,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="planId != null">
+                #{planId,jdbcType=INTEGER},
+            </if>
+            <if test="beginTime != null">
+                #{beginTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="total != null">
+                #{total,jdbcType=INTEGER},
+            </if>
+            <if test="rest != null">
+                #{rest,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.xiaoniucr.entity.Source">
+        update t_source
+        <set>
+            <if test="planId != null">
+                plan_id = #{planId,jdbcType=INTEGER},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="total != null">
+                total = #{total,jdbcType=INTEGER},
+            </if>
+            <if test="rest != null">
+                rest = #{rest,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.xiaoniucr.entity.Source">
+        update t_source
+        set plan_id     = #{planId,jdbcType=INTEGER},
+            begin_time  = #{beginTime,jdbcType=VARCHAR},
+            end_time    = #{endTime,jdbcType=VARCHAR},
+            total       = #{total,jdbcType=INTEGER},
+            rest        = #{rest,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="findList" resultType="com.xiaoniucr.entity.Source">
+        select a.*
+        from t_source a
+        inner join t_plan b on a.plan_id = b.id
+        <where>
+            <if test="planId != null and planId != ''">
+                and a.plan_id = #{planId}
+            </if>
+        </where>
+        order by a.create_time desc
+        limit #{start},#{limit};
+    </select>
+
+    <select id="findTotal" resultType="java.lang.Integer">
+        select count(a.id)
+        from t_source a
+        inner join t_plan b on a.plan_id = b.id
+        <where>
+            <if test="planId != null and planId != ''">
+                and a.plan_id = #{planId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findByPlan" resultType="com.xiaoniucr.entity.Source">
+        select a.*
+        from t_source a
+        inner join t_plan b on a.plan_id = b.id
+        where a.plan_id = #{planId} order by a.create_time desc
+    </select>
+
+
+    <select id="sumByPlan" resultType="java.lang.Integer">
+        select sum(total) from t_source where plan_id = #{planId}
+    </select>
+</mapper>

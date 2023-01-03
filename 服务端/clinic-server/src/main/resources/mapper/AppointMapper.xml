@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoniucr.mapper.AppointMapper">
+    <resultMap id="BaseResultMap" type="com.xiaoniucr.entity.Appoint">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="source_id" jdbcType="INTEGER" property="sourceId"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , user_id, source_id, status, create_time, update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_appoint
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_appoint
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.xiaoniucr.entity.Appoint">
+        insert into t_appoint (id, user_id, source_id,
+                               status, create_time, update_time)
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{sourceId,jdbcType=INTEGER},
+                #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xiaoniucr.entity.Appoint">
+        insert into t_appoint
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="sourceId != null">
+                source_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="sourceId != null">
+                #{sourceId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.xiaoniucr.entity.Appoint">
+        update t_appoint
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="sourceId != null">
+                source_id = #{sourceId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.xiaoniucr.entity.Appoint">
+        update t_appoint
+        set user_id     = #{userId,jdbcType=INTEGER},
+            source_id   = #{sourceId,jdbcType=INTEGER},
+            status      = #{status,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="findList" resultType="com.xiaoniucr.entity.Appoint">
+        select a.*,
+               b.nickname as patientNickname,
+               c.begin_time,c.end_time,
+               d.plan_date,
+               e.nickname as doctorNickname,
+               f.dept_name
+        from t_appoint a
+        inner join t_user b on a.user_id = b.id
+        inner join t_source c on a.source_id = c.id
+        inner join t_plan d on c.plan_id = d.id
+        inner join t_doctor e on d.doctor_id = e.id
+        inner join t_dept f on e.dept_id = f.id
+        <where>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="sourceId != null and sourceId != ''">
+                and a.source_id = #{sourceId}
+            </if>
+            <if test="patientNickname != null and patientNickname != ''">
+                and b.nickname like concat('%',#{patientNickname},'%')
+            </if>
+            <if test="doctorNickname != null and doctorNickname != ''">
+                and e.nickname like concat('%',#{doctorNickname},'%')
+            </if>
+        </where>
+        order by a.create_time desc
+        limit #{start},#{limit};
+    </select>
+
+    <select id="findTotal" resultType="java.lang.Integer">
+        select count(a.id)
+        from t_appoint a
+        inner join t_user b on a.user_id = b.id
+        inner join t_source c on a.source_id = c.id
+        inner join t_plan d on c.plan_id = d.id
+        inner join t_doctor e on d.doctor_id = e.id
+        inner join t_dept f on e.dept_id = f.id
+        <where>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="sourceId != null and sourceId != ''">
+                and a.source_id = #{sourceId}
+            </if>
+            <if test="patientNickname != null and patientNickname != ''">
+                and b.nickname like concat('%',#{patientNickname},'%')
+            </if>
+            <if test="doctorNickname != null and doctorNickname != ''">
+                and e.nickname like concat('%',#{doctorNickname},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectExist" resultType="com.xiaoniucr.entity.Appoint">
+        select * from t_appoint where status = 0 and  user_id = #{userId} and source_id = #{sourceId}
+    </select>
+
+
+</mapper>

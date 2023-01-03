@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoniucr.mapper.PlanMapper">
+    <resultMap id="BaseResultMap" type="com.xiaoniucr.entity.Plan">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="doctor_id" jdbcType="INTEGER" property="doctorId"/>
+        <result column="plan_date" jdbcType="DATE" property="planDate"/>
+        <result column="total_num" jdbcType="INTEGER" property="totalNum"/>
+        <result column="rest_num" jdbcType="INTEGER" property="restNum"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , doctor_id, plan_date, total_num, rest_num, status, create_time, update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_plan
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_plan
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.xiaoniucr.entity.Plan">
+        insert into t_plan (id, doctor_id, plan_date,
+                            total_num, rest_num, status,
+                            create_time, update_time)
+        values (#{id,jdbcType=INTEGER}, #{doctorId,jdbcType=INTEGER}, #{planDate,jdbcType=DATE},
+                #{totalNum,jdbcType=INTEGER}, #{restNum,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xiaoniucr.entity.Plan">
+        insert into t_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="doctorId != null">
+                doctor_id,
+            </if>
+            <if test="planDate != null">
+                plan_date,
+            </if>
+            <if test="totalNum != null">
+                total_num,
+            </if>
+            <if test="restNum != null">
+                rest_num,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="doctorId != null">
+                #{doctorId,jdbcType=INTEGER},
+            </if>
+            <if test="planDate != null">
+                #{planDate,jdbcType=DATE},
+            </if>
+            <if test="totalNum != null">
+                #{totalNum,jdbcType=INTEGER},
+            </if>
+            <if test="restNum != null">
+                #{restNum,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.xiaoniucr.entity.Plan">
+        update t_plan
+        <set>
+            <if test="doctorId != null">
+                doctor_id = #{doctorId,jdbcType=INTEGER},
+            </if>
+            <if test="planDate != null">
+                plan_date = #{planDate,jdbcType=DATE},
+            </if>
+            <if test="totalNum != null">
+                total_num = #{totalNum,jdbcType=INTEGER},
+            </if>
+            <if test="restNum != null">
+                rest_num = #{restNum,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.xiaoniucr.entity.Plan">
+        update t_plan
+        set doctor_id   = #{doctorId,jdbcType=INTEGER},
+            plan_date   = #{planDate,jdbcType=DATE},
+            total_num   = #{totalNum,jdbcType=INTEGER},
+            rest_num    = #{restNum,jdbcType=INTEGER},
+            status      = #{status,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="findList" resultType="com.xiaoniucr.entity.Plan">
+        select a.*,b.nickname
+        from t_plan a
+        inner join t_doctor b on a.doctor_id = b.id
+        <where>
+            <if test="doctorId != null and doctorId != ''">
+                and a.doctor_id = #{doctorId}
+            </if>
+            <if test="status != null and status != ''">
+                and a.status = #{status}
+            </if>
+            <if test="planDate != null and planDate != ''">
+                and a.plan_date = #{planDate}
+            </if>
+        </where>
+        order by a.create_time desc
+        limit #{start},#{limit};
+    </select>
+
+    <select id="findTotal" resultType="java.lang.Integer">
+        select count(a.id)
+        from t_plan a
+        inner join t_doctor b on a.doctor_id = b.id
+        <where>
+            <if test="doctorId != null and doctorId != ''">
+                and a.doctor_id = #{doctorId}
+            </if>
+            <if test="status != null and status != ''">
+                and a.status = #{status}
+            </if>
+            <if test="planDate != null and planDate != ''">
+                and a.plan_date = #{planDate}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectExist" resultType="com.xiaoniucr.entity.Plan">
+        select * from t_plan where doctor_id = #{doctorId} and plan_date = #{planDate};
+    </select>
+</mapper>

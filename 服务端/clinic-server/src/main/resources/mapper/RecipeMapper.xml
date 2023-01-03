@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoniucr.mapper.RecipeMapper">
+    <resultMap id="BaseResultMap" type="com.xiaoniucr.entity.Recipe">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="bill_id" jdbcType="INTEGER" property="billId"/>
+        <result column="drug_id" jdbcType="INTEGER" property="drugId"/>
+        <result column="drug_num" jdbcType="INTEGER" property="drugNum"/>
+        <result column="subtotal" jdbcType="DOUBLE" property="subtotal"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , bill_id, drug_id, drug_num, subtotal, create_time, update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_recipe
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_recipe
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.xiaoniucr.entity.Recipe">
+        insert into t_recipe (id, bill_id, drug_id,
+                              drug_num, subtotal, create_time,
+                              update_time)
+        values (#{id,jdbcType=INTEGER}, #{billId,jdbcType=INTEGER}, #{drugId,jdbcType=INTEGER},
+                #{drugNum,jdbcType=INTEGER}, #{subtotal,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.xiaoniucr.entity.Recipe">
+        insert into t_recipe
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="billId != null">
+                bill_id,
+            </if>
+            <if test="drugId != null">
+                drug_id,
+            </if>
+            <if test="drugNum != null">
+                drug_num,
+            </if>
+            <if test="subtotal != null">
+                subtotal,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="billId != null">
+                #{billId,jdbcType=INTEGER},
+            </if>
+            <if test="drugId != null">
+                #{drugId,jdbcType=INTEGER},
+            </if>
+            <if test="drugNum != null">
+                #{drugNum,jdbcType=INTEGER},
+            </if>
+            <if test="subtotal != null">
+                #{subtotal,jdbcType=DOUBLE},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.xiaoniucr.entity.Recipe">
+        update t_recipe
+        <set>
+            <if test="billId != null">
+                bill_id = #{billId,jdbcType=INTEGER},
+            </if>
+            <if test="drugId != null">
+                drug_id = #{drugId,jdbcType=INTEGER},
+            </if>
+            <if test="drugNum != null">
+                drug_num = #{drugNum,jdbcType=INTEGER},
+            </if>
+            <if test="subtotal != null">
+                subtotal = #{subtotal,jdbcType=DOUBLE},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.xiaoniucr.entity.Recipe">
+        update t_recipe
+        set bill_id     = #{billId,jdbcType=INTEGER},
+            drug_id     = #{drugId,jdbcType=INTEGER},
+            drug_num    = #{drugNum,jdbcType=INTEGER},
+            subtotal    = #{subtotal,jdbcType=DOUBLE},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="findList" resultType="com.xiaoniucr.entity.Recipe">
+        select a.*,
+        c.drug_name,c.price,c.unit,c.useway
+        from t_recipe a
+        inner join t_bill b on a.bill_id = b.id
+        inner join t_drug c on a.drug_id = c.id
+        <where>
+            <if test="billId != null and billId != ''">
+                and a.bill_id = #{billId}
+            </if>
+            <if test="drugName != null and drugName != ''">
+                and c.drug_name like concat('%',#{drugName},'%')
+            </if>
+        </where>
+        order by a.create_time desc
+        limit #{start},#{limit};
+    </select>
+
+    <select id="findTotal" resultType="java.lang.Integer">
+        select count(a.id)
+        from t_recipe a
+        inner join t_bill b on a.bill_id = b.id
+        inner join t_drug c on a.drug_id = c.id
+        <where>
+            <if test="billId != null and billId != ''">
+                and a.bill_id = #{billId}
+            </if>
+            <if test="drugName != null and drugName != ''">
+                and c.drug_name like concat('%',#{drugName},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findByBill" resultType="com.xiaoniucr.entity.Recipe">
+        select a.*,
+        c.drug_name,c.price,c.unit,c.useway
+        from t_recipe a
+        inner join t_bill b on a.bill_id = b.id
+        inner join t_drug c on a.drug_id = c.id
+        <where>
+            <if test="billId != null and billId != ''">
+                and a.bill_id = #{billId}
+            </if>
+            <if test="drugName != null and drugName != ''">
+                and c.drug_name like concat('%',#{drugName},'%')
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+
+    <select id="sumByBill" resultType="java.lang.Double">
+        select sum(subtotal) from t_recipe where bill_id = #{billId}
+    </select>
+
+
+    <select id="selectExist" resultType="com.xiaoniucr.entity.Recipe">
+        select * from t_recipe where bill_id = #{billId} and drug_id = #{drugId};
+    </select>
+</mapper>
